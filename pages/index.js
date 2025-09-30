@@ -1,11 +1,14 @@
 // pages/index.js
 import Head from "next/head";
 import Link from "next/link";
-import { getAllPosts } from "../lib/posts";
-import { getBaseUrl } from "../lib/siteUrl";
 
+/**
+ * Homepage listing
+ */
 export default function Home({ posts }) {
-  const base = getBaseUrl();
+  const base = process.env.NEXT_PUBLIC_SITE_URL
+    ? process.env.NEXT_PUBLIC_SITE_URL.replace(/\/+$/, "")
+    : "";
 
   return (
     <>
@@ -15,31 +18,25 @@ export default function Home({ posts }) {
           name="description"
           content="Static, SEO-friendly pages generated from Notion."
         />
+        {/* Optional canonical for the listing page */}
         {base && <link rel="canonical" href={base} />}
-        {base && <meta property="og:url" content={base} />}
-        <meta property="og:type" content="website" />
       </Head>
 
       <div className="container">
         <h1 className="site-title">Cyberooms Knowledge Base</h1>
-        <p className="meta">
-          Static, SEO-friendly pages generated from Notion.
-        </p>
-        <hr />
+        <p className="tagline">Static, SEO-friendly pages generated from Notion.</p>
+        <hr className="divider" />
 
-        <ul>
+        <ul className="post-list">
           {posts.map((p) => (
-            <li key={p.slug} style={{ marginBottom: "1.5rem" }}>
-              <h3 style={{ margin: "0 0 0.25rem 0", fontWeight: 600 }}>
-                <Link href={`/${p.slug}`} legacyBehavior>
-                  <a>{p.title}</a>
-                </Link>
-              </h3>
-              <p className="meta">
-                <time dateTime={p.datePublished}>{p.datePublished}</time> ·{" "}
-                {p.author}
-              </p>
-              <p>{p.description}</p>
+            <li key={p.slug} className="post-item">
+              <h2 className="post-title">
+                <Link href={`/${p.slug}`}>{p.title}</Link>
+              </h2>
+              <div className="post-meta">
+                <time dateTime={p.datePublished}>{p.datePublished}</time> · {p.author}
+              </div>
+              {p.description && <p className="post-desc">{p.description}</p>}
             </li>
           ))}
         </ul>
@@ -48,7 +45,11 @@ export default function Home({ posts }) {
   );
 }
 
+/**
+ * Dynamic import keeps fs/path server-only.
+ */
 export async function getStaticProps() {
+  const { getAllPosts } = await import("../lib/posts");
   const posts = getAllPosts();
   return { props: { posts } };
 }
