@@ -1,0 +1,29 @@
+[
+  {
+    "title": "Top 10 AI-Driven Security Tools in 2025",
+    "slug": "ai-security-tools-2025",
+    "description": "Discover the top 10 AI-driven cybersecurity tools in 2025 for threat detection and Zero Trust models.",
+    "contentPath": "ai-security-tools-2025.md",
+    "author": "Edgar Pfuma",
+    "datePublished": "2025-09-28",
+    "updatedAt": "2025-09-29",
+    "schemaType": "Article",
+    "image": "https://cyberooms.com/images/truefort.webp",
+    "publisherName": "Cyberooms",
+    "publisherLogo": "https://cyberooms.com/images/logo.png",
+
+    "howtoSteps": [
+      "Define goals (reduce dwell time, limit lateral movement).",
+      "Inventory tools and telemetry sources.",
+      "Pilot with one segment, measure, then scale."
+    ],
+
+    "faqs": [
+      { "question": "What is microsegmentation?", "answer": "A method to limit lateral movement by isolating workloads." },
+      { "question": "Do I need EDR for Zero Trust?", "answer": "It helps provide identity and behavior telemetry, but is not strictly required." }
+    ],
+
+    "keywords": ["AI Security","Cybersecurity Tools","Zero Trust"]
+  }
+]
+
