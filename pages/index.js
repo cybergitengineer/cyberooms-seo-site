@@ -1,40 +1,54 @@
-import Link from 'next/link'
-import SEO from '../components/SEO'
-import { getAllPosts } from '../lib/posts'
+// pages/index.js
+import Head from "next/head";
+import Link from "next/link";
+import { getAllPosts } from "../lib/posts";
+import { getBaseUrl } from "../lib/siteUrl";
 
-export default function Home({ posts, siteUrl }) {
-  const title = 'Cyberooms Knowledge Base'
-  const description = 'Static, SEO-friendly pages generated from Notion.'
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    "name": title,
-    "url": siteUrl
-  }
+export default function Home({ posts }) {
+  const base = getBaseUrl();
 
   return (
-    <div className="container">
-      <SEO title={title} description={description} url={siteUrl} type="website" jsonLd={jsonLd} />
-      <div className="site-title">{title}</div>
-      <p className="meta">{description}</p>
-      <hr />
-      {posts.map(p => (
-        <article key={p.slug} className="card">
-          <h2><Link href={`/${p.slug}`}>{p.title}</Link></h2>
-          <p className="meta">
-            <time dateTime={p.datePublished}>{p.datePublished}</time> · {p.author}
-          </p>
-          <p>{p.description}</p>
-          <Link href={`/${p.slug}`}>Read more →</Link>
-        </article>
-      ))}
-      <footer>© {new Date().getFullYear()} Cyberooms</footer>
-    </div>
-  )
+    <>
+      <Head>
+        <title>Cyberooms Knowledge Base</title>
+        <meta
+          name="description"
+          content="Static, SEO-friendly pages generated from Notion."
+        />
+        {base && <link rel="canonical" href={base} />}
+        {base && <meta property="og:url" content={base} />}
+        <meta property="og:type" content="website" />
+      </Head>
+
+      <div className="container">
+        <h1 className="site-title">Cyberooms Knowledge Base</h1>
+        <p className="meta">
+          Static, SEO-friendly pages generated from Notion.
+        </p>
+        <hr />
+
+        <ul>
+          {posts.map((p) => (
+            <li key={p.slug} style={{ marginBottom: "1.5rem" }}>
+              <h3 style={{ margin: "0 0 0.25rem 0", fontWeight: 600 }}>
+                <Link href={`/${p.slug}`} legacyBehavior>
+                  <a>{p.title}</a>
+                </Link>
+              </h3>
+              <p className="meta">
+                <time dateTime={p.datePublished}>{p.datePublished}</time> ·{" "}
+                {p.author}
+              </p>
+              <p>{p.description}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </>
+  );
 }
 
 export async function getStaticProps() {
-  const posts = getAllPosts()
-  const siteUrl = process.env.SITE_URL || 'https://cyberooms.com'
-  return { props: { posts, siteUrl } }
+  const posts = getAllPosts();
+  return { props: { posts } };
 }
