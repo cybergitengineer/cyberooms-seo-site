@@ -41,8 +41,13 @@ export default function PostPage({ post }) {
           {post?.author}
         </p>
         <hr />
-        {/* Render parsed HTML */}
-        <article dangerouslySetInnerHTML={{ __html: post?.contentHtml || "" }} />
+        {/* Render parsed HTML with fallback */}
+        <article
+          className="content"
+          dangerouslySetInnerHTML={{
+            __html: post?.contentHtml || "<p>[No content found]</p>",
+          }}
+        />
       </div>
     </>
   );
