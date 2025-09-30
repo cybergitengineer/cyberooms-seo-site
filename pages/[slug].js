@@ -1,40 +1,45 @@
-import SEO from '../components/SEO'
-import { getAllSlugs, getPostBySlug } from '../lib/posts'
+﻿import Head from "next/head";
+import { getBaseUrl } from "../lib/siteUrl";
 
-export default function PostPage({ post, siteUrl }) {
-  if (!post) return <div className="container">Not found</div>
-  const url = `${siteUrl.replace(/\/$/, '')}/${post.slug}/`
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": post.schemaType || "Article",
-    "headline": post.title,
-    "author": { "@type": "Person", "name": post.author || "Cyberooms" },
-    "datePublished": post.datePublished,
-    "dateModified": post.updatedAt || post.datePublished,
-    "description": post.description,
-    "mainEntityOfPage": url
-  }
+export default function PostPage({ post }) {
+  const base = getBaseUrl();
+  const url = base && post?.slug ? `${base}/${post.slug}` : undefined;
+
   return (
-    <div className="container">
-      <SEO title={post.title} description={post.description} url={url} type="article" jsonLd={jsonLd} />
-      <h1 className="site-title">{post.title}</h1>
-      <p className="meta">
-        <time dateTime={post.datePublished}>{post.datePublished}</time> · {post.author}
-      </p>
-      <hr />
-      <article dangerouslySetInnerHTML={{ __html: post.content }} />
-    </div>
-  )
-}
+    <>
+      <Head>
+        <title>{post?.title || "Article"}</title>
+        <meta name="description" content={post?.description || ""} />
+        {url && <link rel="canonical" href={url} />}
+        {url && <meta property="og:url" content={url} />}
+        <meta property="og:type" content="article" />
+        {url && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "Article",
+                headline: post?.title,
+                description: post?.description,
+                datePublished: post?.datePublished,
+                dateModified: post?.updatedAt || post?.datePublished,
+                author: { "@type": "Person", "name": post?.author || "Cyberooms" },
+                mainEntityOfPage: url,
+              }),
+            }}
+          />
+        )}
+      </Head>
 
-export async function getStaticPaths() {
-  const slugs = getAllSlugs()
-  const paths = slugs.map(slug => ({ params: { slug } }))
-  return { paths, fallback: false }
-}
-
-export async function getStaticProps({ params }) {
-  const post = getPostBySlug(params.slug) || null
-  const siteUrl = process.env.SITE_URL || 'https://cyberooms.com'
-  return { props: { post, siteUrl } }
+      <div className="container">
+        <h1 className="site-title">{post?.title}</h1>
+        <p className="meta">
+          <time dateTime={post?.datePublished}>{post?.datePublished}</time>  {post?.author}
+        </p>
+        <hr />
+        <article dangerouslySetInnerHTML={{ __html: post?.content || "" }} />
+      </div>
+    </>
+  );
 }

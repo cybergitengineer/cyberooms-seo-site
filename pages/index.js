@@ -1,29 +1,35 @@
-// pages/index.js
+﻿// pages/index.js
 import Head from "next/head";
+import Link from "next/link";
+import { getBaseUrl } from "../lib/siteUrl";
 
-export default function Home() {
-  // Use the environment variable (fall back to a default if not set)
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+// minimal demo list; your actual posts list code can remain
+export default function Home({ posts = [] }) {
+  const base = getBaseUrl();
+  const canonical = base ? `${base}/` : undefined;
 
   return (
     <>
       <Head>
         <title>Cyberooms Knowledge Base</title>
-        <meta
-          name="description"
-          content="Static, SEO-friendly pages generated from Notion."
-        />
-        {/* 👇 Canonical URL now points to your environment variable */}
-        <link rel="canonical" href={siteUrl} />
-        <meta property="og:url" content={siteUrl} />
+        <meta name="description" content="Static, SEO-friendly pages generated from Notion." />
+        {canonical && <link rel="canonical" href={canonical} />}
+        {canonical && <meta property="og:url" content={canonical} />}
+        <meta property="og:type" content="website" />
       </Head>
 
-      <main>
-        <h1>Welcome to Cyberooms Knowledge Base</h1>
-        <p>
-          This site is powered by Next.js and Notion. Deployed on Vercel.
-        </p>
-      </main>
+      <div className="container">
+        <h1 className="site-title">Cyberooms Knowledge Base</h1>
+        <p className="meta">Static, SEO-friendly pages generated from Notion.</p>
+        <hr />
+        <ul>
+          {posts.map((p) => (
+            <li key={p.slug}>
+              <Link href={`/${p.slug}`}>{p.title}</Link>
+            </li>
+          ))}
+        </ul>
+      </div>
     </>
   );
 }
