@@ -1,40 +1,29 @@
-import Link from 'next/link'
-import SEO from '../components/SEO'
-import { getAllPosts } from '../lib/posts'
+// pages/index.js
+import Head from "next/head";
 
-export default function Home({ posts, siteUrl }) {
-  const title = 'Cyberooms Knowledge Base'
-  const description = 'Static, SEO-friendly pages generated from Notion.'
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    "name": title,
-    "url": siteUrl
-  }
+export default function Home() {
+  // Use the environment variable (fall back to a default if not set)
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
   return (
-    <div className="container">
-      <SEO title={title} description={description} url={siteUrl} type="website" jsonLd={jsonLd} />
-      <div className="site-title">{title}</div>
-      <p className="meta">{description}</p>
-      <hr />
-      {posts.map(p => (
-        <article key={p.slug} className="card">
-          <h2><Link href={`/${p.slug}`}>{p.title}</Link></h2>
-          <p className="meta">
-            <time dateTime={p.datePublished}>{p.datePublished}</time> · {p.author}
-          </p>
-          <p>{p.description}</p>
-          <Link href={`/${p.slug}`}>Read more →</Link>
-        </article>
-      ))}
-      <footer>© {new Date().getFullYear()} Cyberooms</footer>
-    </div>
-  )
-}
+    <>
+      <Head>
+        <title>Cyberooms Knowledge Base</title>
+        <meta
+          name="description"
+          content="Static, SEO-friendly pages generated from Notion."
+        />
+        {/* 👇 Canonical URL now points to your environment variable */}
+        <link rel="canonical" href={siteUrl} />
+        <meta property="og:url" content={siteUrl} />
+      </Head>
 
-export async function getStaticProps() {
-  const posts = getAllPosts()
-  const siteUrl = process.env.SITE_URL || 'https://cyberooms.com'
-  return { props: { posts, siteUrl } }
+      <main>
+        <h1>Welcome to Cyberooms Knowledge Base</h1>
+        <p>
+          This site is powered by Next.js and Notion. Deployed on Vercel.
+        </p>
+      </main>
+    </>
+  );
 }
