@@ -1,6 +1,6 @@
 ﻿// pages/[slug].js
 import Head from "next/head";
-import { getAllPosts, getPostBySlug } from "../lib/posts"; // <-- your existing helpers
+import { getAllPosts, getPostBySlug } from "../lib/posts";
 import { getBaseUrl } from "../lib/siteUrl";
 
 export default function PostPage({ post }) {
@@ -41,8 +41,8 @@ export default function PostPage({ post }) {
           {post?.author}
         </p>
         <hr />
-        {/* Your content is already HTML; render it safely */}
-        <article dangerouslySetInnerHTML={{ __html: post?.content || "" }} />
+        {/* Render parsed HTML */}
+        <article dangerouslySetInnerHTML={{ __html: post?.contentHtml || "" }} />
       </div>
     </>
   );
@@ -50,10 +50,7 @@ export default function PostPage({ post }) {
 
 export async function getStaticPaths() {
   const posts = getAllPosts();
-  return {
-    paths: posts.map((p) => ({ params: { slug: p.slug } })),
-    fallback: false,
-  };
+  return { paths: posts.map((p) => ({ params: { slug: p.slug } })), fallback: false };
 }
 
 export async function getStaticProps({ params }) {
