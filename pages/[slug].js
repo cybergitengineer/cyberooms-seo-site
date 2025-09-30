@@ -1,4 +1,6 @@
-﻿import Head from "next/head";
+﻿// pages/[slug].js
+import Head from "next/head";
+import { getAllPosts, getPostBySlug } from "../lib/posts"; // <-- your existing helpers
 import { getBaseUrl } from "../lib/siteUrl";
 
 export default function PostPage({ post }) {
@@ -24,7 +26,7 @@ export default function PostPage({ post }) {
                 description: post?.description,
                 datePublished: post?.datePublished,
                 dateModified: post?.updatedAt || post?.datePublished,
-                author: { "@type": "Person", "name": post?.author || "Cyberooms" },
+                author: { "@type": "Person", name: post?.author || "Cyberooms" },
                 mainEntityOfPage: url,
               }),
             }}
@@ -35,11 +37,26 @@ export default function PostPage({ post }) {
       <div className="container">
         <h1 className="site-title">{post?.title}</h1>
         <p className="meta">
-          <time dateTime={post?.datePublished}>{post?.datePublished}</time>  {post?.author}
+          <time dateTime={post?.datePublished}>{post?.datePublished}</time> ·{" "}
+          {post?.author}
         </p>
         <hr />
+        {/* Your content is already HTML; render it safely */}
         <article dangerouslySetInnerHTML={{ __html: post?.content || "" }} />
       </div>
     </>
   );
+}
+
+export async function getStaticPaths() {
+  const posts = getAllPosts();
+  return {
+    paths: posts.map((p) => ({ params: { slug: p.slug } })),
+    fallback: false,
+  };
+}
+
+export async function getStaticProps({ params }) {
+  const post = getPostBySlug(params.slug);
+  return { props: { post } };
 }
