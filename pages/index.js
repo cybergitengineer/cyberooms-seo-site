@@ -1,12 +1,11 @@
-﻿// pages/index.js
+// pages/index.js
 import Head from "next/head";
 import Link from "next/link";
-import { getAllPosts } from "../lib/posts"; // <-- your existing helper
+import { getAllPosts } from "../lib/posts";
 import { getBaseUrl } from "../lib/siteUrl";
 
 export default function Home({ posts }) {
   const base = getBaseUrl();
-  const canonical = base ? `${base}/` : undefined;
 
   return (
     <>
@@ -16,23 +15,31 @@ export default function Home({ posts }) {
           name="description"
           content="Static, SEO-friendly pages generated from Notion."
         />
-        {canonical && <link rel="canonical" href={canonical} />}
-        {canonical && <meta property="og:url" content={canonical} />}
+        {base && <link rel="canonical" href={base} />}
+        {base && <meta property="og:url" content={base} />}
         <meta property="og:type" content="website" />
       </Head>
 
       <div className="container">
         <h1 className="site-title">Cyberooms Knowledge Base</h1>
-        <p className="meta">Static, SEO-friendly pages generated from Notion.</p>
+        <p className="meta">
+          Static, SEO-friendly pages generated from Notion.
+        </p>
         <hr />
+
         <ul>
           {posts.map((p) => (
-            <li key={p.slug} style={{ margin: "0.5rem 0" }}>
-              <Link href={`/${p.slug}`}>{p.title}</Link>
-              <div style={{ fontSize: 12, opacity: 0.75 }}>
-                {p.datePublished} · {p.author}
-              </div>
-              <div style={{ fontSize: 14 }}>{p.description}</div>
+            <li key={p.slug} style={{ marginBottom: "1.5rem" }}>
+              <h3 style={{ margin: "0 0 0.25rem 0", fontWeight: 600 }}>
+                <Link href={`/${p.slug}`} legacyBehavior>
+                  <a>{p.title}</a>
+                </Link>
+              </h3>
+              <p className="meta">
+                <time dateTime={p.datePublished}>{p.datePublished}</time> ·{" "}
+                {p.author}
+              </p>
+              <p>{p.description}</p>
             </li>
           ))}
         </ul>
@@ -42,7 +49,6 @@ export default function Home({ posts }) {
 }
 
 export async function getStaticProps() {
-  const posts = getAllPosts(); // reads your local content/ or data file
+  const posts = getAllPosts();
   return { props: { posts } };
 }
-
