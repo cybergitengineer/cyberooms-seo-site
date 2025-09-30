@@ -27,9 +27,7 @@ Artificial Intelligence is reshaping cybersecurity. From automated threat detect
 - What it does: AI-powered EDR/XDR with rich endpoint telemetry.
 
 <aside>
-🔒
-
-*Best for large enterprises needing unified endpoint visibility across cloud and on-prem.*
+🔒 *Best for large enterprises needing unified endpoint visibility across cloud and on-prem.*
 
 </aside>
 
