@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <!-- Homepage -->
   <url>
-    <loc>https://cyberooms.com/ai/</loc>
+    <loc>https://ai.cyberooms.com/</loc>
+    <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
+
+  <!-- Example content page -->
   <url>
-    <loc>https://cyberooms.com/ai/ai-security-tools-2025</loc>
+    <loc>https://ai.cyberooms.com/ai-security-tools-2025</loc>
+    <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
+
 </urlset>
