@@ -3,6 +3,9 @@ import Head from "next/head";
 import { getAllPosts, getPostBySlug } from "../lib/posts";
 import { makeCanonicalUrl } from "../lib/siteUrl";
 
+const url = makeCanonicalUrl(post?.slug);
+
+
 export default function PostPage({ post }) {
   const canonicalUrl = post?.slug ? makeCanonicalUrl(post.slug) : undefined;
 
