@@ -1,7 +1,11 @@
-﻿const url =
+﻿// In next-seo.config.js at the top
+console.log('NEXT_PUBLIC_SITE_URL:', process.env.NEXT_PUBLIC_SITE_URL);
+console.log('VERCEL_URL:', process.env.VERCEL_URL);
+console.log('Final URL being used:', url);
+const url =
   process.env.NEXT_PUBLIC_SITE_URL ||
-  process.env.SITE_URL ||
-  "https://cyberooms-seo-site.vercel.app"; // safe default for preview
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null) ||
+  "https://cyberooms-seo-site.vercel.app";
 
 export default {
   title: "Cyberooms Knowledge Base",
