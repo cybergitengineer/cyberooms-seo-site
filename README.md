@@ -74,3 +74,53 @@ npm run build
 - Add richer **JSON-LD** per content type (FAQ, HowTo, Product, Course).
 - Add an **RSS/Atom feed** for subscribers.
 - Wire this to your Notion ETL so `data/posts.json` is generated automatically before build.
+
+# Cyberooms AI SEO Site
+
+Static SEO-optimized site powered by **Next.js** + **Markdown content** + **Vercel hosting**.  
+Deployed at: [https://ai.cyberooms.com](https://ai.cyberooms.com)
+
+---
+
+## 🚀 Project Overview
+- **Content source**: Markdown files in `/content` + metadata in `data/posts.json`.
+- **Pages**: 
+  - Homepage → lists articles.
+  - Dynamic `[slug].js` → renders each article with SEO meta, OpenGraph, Schema.org.
+- **Hosting**: Vercel (`ai.cyberooms.com` subdomain).
+- **SEO**:
+  - Canonical URLs from `lib/siteUrl.js`.
+  - `robots.txt` and `sitemap.xml` in `/public`.
+  - Rich snippets enabled (Schema.org `Article`).
+
+---
+
+## 📂 Folder Structure
+
+seo-ai-notion-static/
+│
+├── content/ # Markdown articles (e.g., ai-security-tools-2025.md)
+├── data/posts.json # Metadata (title, slug, desc, etc.)
+├── lib/
+│ ├── posts.js # Markdown → HTML parser
+│ └── siteUrl.js # Canonical base URL resolver
+├── pages/
+│ ├── index.js # Homepage listing
+│ ├── [slug].js # Dynamic article pages
+│ └── _app.js # Global app wrapper
+├── public/
+│ ├── robots.txt # Robots file
+│ └── sitemap.xml # Sitemap
+├── styles/globals.css # Global CSS
+└── .env.local # Local-only environment variables
+
+
+---
+
+## 🛠 Environment Variables
+
+Configured in **Vercel → Project → Settings → Environment Variables**:
+
+```env
+NEXT_PUBLIC_SITE_URL=https://ai.cyberooms.com
+
