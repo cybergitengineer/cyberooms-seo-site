@@ -1,19 +1,17 @@
+# Dependencies
 node_modules/
 .next/
 out/
-.env
-.vercel/
-coverage/
-*.log
+
+# Local environment variables
+.env.local
+.env.*.local
+
+# Logs
 npm-debug.log*
+yarn-debug.log*
 yarn-error.log*
-pnpm-debug.log*
+
+# OS files
 .DS_Store
 Thumbs.db
-.vscode/
-.idea/
-
-temp-clean/
-
-!content/
-!content/*.md
