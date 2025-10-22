@@ -1,7 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export',
-  images: { unoptimized: true },
+  reactStrictMode: true,
+  swcMinify: true,
+  // ❌ remove or comment out this line if it exists:
+  // output: 'export',
 };
 
 module.exports = nextConfig;
