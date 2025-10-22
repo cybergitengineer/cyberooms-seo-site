@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "node scripts/generate-sitemap.js && next build",
+    "export": "next export",
     "start": "next start",
     "lint": "next lint || echo 'lint skipped'"
   },
