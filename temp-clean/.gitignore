@@ -1,0 +1,37 @@
+# Dependencies
+node_modules/
+
+# Next.js build output
+.next/
+out/
+
+# Vercel local settings
+.vercel/
+
+# Logs
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.log
+
+# Env files
+.env
+.env.local
+.env.*.local
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Editor folders
+.vscode/
+.idea/
+
+# Coverage / testing
+coverage/
+*.lcov
+
+# Misc
+*.swp
+*.swo
+*.bak
