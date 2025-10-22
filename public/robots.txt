@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://ai.cyberooms.com/sitemap.xml
+Sitemap: https://cyberooms-seo-site.vercel.app/sitemap.xml
