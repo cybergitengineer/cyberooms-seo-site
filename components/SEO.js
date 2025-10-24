@@ -12,6 +12,30 @@ const jsonLd = {
 };
 import Head from 'next/head'
 
+// JSON-LD generator
+export function generateJsonLd({ title, description, slug }) {
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: title,
+    description,
+    url: `${siteUrl}/${slug}`,
+    author: { "@type": "Person", name: "Edgar Pfuma" },
+    publisher: {
+      "@type": "Organization",
+      name: "Cyberooms AI",
+      logo: {
+        "@type": "ImageObject",
+        url: `${siteUrl}/logo.png`
+      }
+    }
+  };
+}
+
+
 export default function SEO({ title, description, url, type = 'article', jsonLd = null }) {
   return (
     <Head>

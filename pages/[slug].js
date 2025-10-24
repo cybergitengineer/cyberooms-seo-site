@@ -1,45 +1,47 @@
-﻿// pages/[slug].js
-import Head from "next/head";
+﻿import Head from "next/head";
 import { getAllPosts, getPostBySlug } from "../lib/posts";
 import { makeCanonicalUrl } from "../lib/siteUrl";
 
 export default function PostPage({ post }) {
-  // Guard just in case (build will also 404 via getStaticProps)
-  if (!post) {
-    return <div className="container">Post not found.</div>;
-  }
+  if (!post) return <div className="container">Post not found.</div>;
 
   const canonical = makeCanonicalUrl(post.slug);
+
+  // Inline JSON-LD string
+  const jsonLd = canonical
+    ? `{
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "${post.title}",
+      "description": "${post.description}",
+      "datePublished": "${post.datePublished}",
+      "dateModified": "${post.updatedAt || post.datePublished}",
+      "author": {"@type": "Person", "name": "${post.author || "Edgar Pfuma"}"},
+      "publisher": {
+        "@type": "Organization",
+        "name": "Cyberooms AI",
+        "logo": {"@type": "ImageObject","url": "https://ai.cyberooms.com/logo.png"}
+      },
+      "mainEntityOfPage": {"@type": "WebPage","@id": "${canonical}"},
+      "keywords": "${post.keywords || ""}",
+      "inLanguage": "en",
+      "url": "${canonical}"
+    }`
+    : "";
 
   return (
     <>
       <Head>
         <title>{post.title || "Article"}</title>
         <meta name="description" content={post.description || ""} />
+        <meta name="ai-search" content="optimized-for-llm" />
+        <meta name="llm-friendly" content="true" />
+        <meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large" />
         {canonical && <link rel="canonical" href={canonical} />}
         {canonical && <meta property="og:url" content={canonical} />}
         <meta property="og:type" content="article" />
         <meta property="og:title" content={post.title || "Article"} />
         <meta property="og:description" content={post.description || ""} />
-
-        {/* JSON-LD */}
-        {canonical && (
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{
-              __html: JSON.stringify({
-                "@context": "https://schema.org",
-                "@type": "Article",
-                headline: post.title,
-                description: post.description,
-                datePublished: post.datePublished,
-                dateModified: post.updatedAt || post.datePublished,
-                author: { "@type": "Person", name: post.author || "Cyberooms" },
-                mainEntityOfPage: canonical,
-              }),
-            }}
-          />
-        )}
       </Head>
 
       <div className="container">
@@ -49,6 +51,16 @@ export default function PostPage({ post }) {
         </p>
         <hr />
         <article dangerouslySetInnerHTML={{ __html: post.contentHtml || "" }} />
+
+        {/* ✅ Guaranteed static JSON-LD output */}
+        {jsonLd && (
+          <div
+            id="structured-data"
+            dangerouslySetInnerHTML={{
+              __html: `<script type="application/ld+json">${jsonLd}</script>`,
+            }}
+          />
+        )}
       </div>
     </>
   );
@@ -56,21 +68,11 @@ export default function PostPage({ post }) {
 
 export async function getStaticPaths() {
   const posts = getAllPosts();
-  return {
-    paths: posts.map((p) => ({ params: { slug: p.slug } })),
-    fallback: false, // all pages are generated at build time
-  };
+  return { paths: posts.map((p) => ({ params: { slug: p.slug } })), fallback: false };
 }
 
 export async function getStaticProps({ params }) {
   const post = getPostBySlug(params.slug);
-
-  // If no post for this slug, return a 404
-  if (!post) {
-    return { notFound: true };
-  }
-
-  return {
-    props: { post },
-  };
+  if (!post) return { notFound: true };
+  return { props: { post } };
 }
