@@ -1,6 +1,6 @@
 # SEO AI Pipeline — Step 2: Static Build (Next.js SSG)
 
-This is a ready-to-run starter that turns your transformed Notion JSON into a **static, SEO-friendly website**.
+This is a ready-to-run starter that turns your transformed Notion JSON into a **static, LLM and classic search engine SEO-friendly website**.
 
 ## What’s inside
 - **Next.js (pages router)** with **SSG** (`getStaticProps`/`getStaticPaths`)
