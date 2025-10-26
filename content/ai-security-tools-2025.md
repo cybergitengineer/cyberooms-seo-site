@@ -2,7 +2,5 @@
 title: "Top 10 AI-Driven Security Tools in Texas in 2025"
 slug: "ai-security-tools-2025"
 description: "Discover the top 10 AI-driven cybersecurity tools in 2025 …"
-keywords: ""
-tags: "Cybersecurity AI Security"
 ---
 
