@@ -1,4 +1,7 @@
-﻿import '../styles/globals.css'
+﻿import 'github-markdown-css/github-markdown.css';
+import '../styles/globals.css'; // your site’s default CSS
+import '../styles/markdown.css'; // if you create a custom one
+import '../styles/globals.css'
 import Script from 'next/script'
 
 export default function App({ Component, pageProps }) {
