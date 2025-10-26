@@ -1,9 +1,12 @@
 import fs from "fs";
 import path from "path";
+import matter from "gray-matter";
+import { marked } from "marked";
 import Head from "next/head";
 
-export default function NotionPost({ post }) {
-  if (!post) return <div className="container">Post not found.</div>;
+export default function PostPage({ post }) {
+  if (!post)
+    return <div className="container">Post not found.</div>;
 
   return (
     <>
@@ -12,7 +15,10 @@ export default function NotionPost({ post }) {
         <meta name="description" content={post.description || ""} />
         <meta name="ai-search" content="optimized-for-llm" />
         <meta name="llm-friendly" content="true" />
-        <meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large" />
+        <meta
+          name="robots"
+          content="index,follow,max-snippet:-1,max-image-preview:large"
+        />
       </Head>
 
       <div className="container">
@@ -27,24 +33,100 @@ export default function NotionPost({ post }) {
   );
 }
 
+// 🧩 Generate all slugs from both Markdown and Notion
 export async function getStaticPaths() {
-  const filePath = path.join(process.cwd(), "content", "notion_sync.json");
-  const jsonData = fs.readFileSync(filePath, "utf-8");
-  const data = JSON.parse(jsonData);
+  const notionPath = path.join(process.cwd(), "content", "notion_sync.json");
+  const markdownDir = path.join(process.cwd(), "content");
 
-  const paths = data.results.map((item) => ({
-    params: { slug: item.id },
-  }));
+  let paths = [];
+
+  // Markdown-based slugs
+  const markdownFiles = fs
+    .readdirSync(markdownDir)
+    .filter((file) => file.endsWith(".md"))
+    .map((file) => ({
+      params: { slug: file.replace(".md", "") },
+    }));
+
+  paths.push(...markdownFiles);
+
+  // Notion-based slugs
+  if (fs.existsSync(notionPath)) {
+    const jsonData = fs.readFileSync(notionPath, "utf-8");
+    const data = JSON.parse(jsonData);
+
+    const notionSlugs =
+      data.results
+        ?.filter((item) => item.properties?.Published?.checkbox)
+        .map((item) => ({
+          params: {
+            slug:
+              item.properties?.["Slug/URL"]?.rich_text?.[0]?.plain_text ||
+              item.id,
+          },
+        })) || [];
+
+    paths.push(...notionSlugs);
+  }
 
   return { paths, fallback: false };
 }
 
+// ⚙️ Load either Markdown or Notion post content
 export async function getStaticProps({ params }) {
-  const filePath = path.join(process.cwd(), "content", "notion_sync.json");
-  const jsonData = fs.readFileSync(filePath, "utf-8");
-  const data = JSON.parse(jsonData);
+  const { slug } = params;
+  const notionPath = path.join(process.cwd(), "content", "notion_sync.json");
+  const markdownPath = path.join(process.cwd(), "content", `${slug}.md`);
 
-  const post = data.results.find((item) => item.id === params.slug);
+  // ✅ If a markdown file exists
+  if (fs.existsSync(markdownPath)) {
+    const markdownFile = fs.readFileSync(markdownPath, "utf-8");
+    const { data: frontmatter, content } = matter(markdownFile);
+    return {
+      props: {
+        post: {
+          title: frontmatter.title,
+          description: frontmatter.description || "",
+          author: frontmatter.author || "Cyberooms AI",
+          date: frontmatter.date || "",
+          content: marked(content),
+        },
+      },
+    };
+  }
 
-  return { props: { post: post || null } };
+  // ✅ Otherwise, fall back to Notion JSON
+  if (fs.existsSync(notionPath)) {
+    const jsonData = fs.readFileSync(notionPath, "utf-8");
+    const data = JSON.parse(jsonData);
+    const item = data.results.find(
+      (i) =>
+        i.properties?.["Slug/URL"]?.rich_text?.[0]?.plain_text === slug &&
+        i.properties?.Published?.checkbox
+    );
+
+    if (item) {
+      const title = item.properties?.["Article Title"]?.title?.[0]?.plain_text;
+      const description =
+        item.properties?.["Meta Description"]?.rich_text?.[0]?.plain_text || "";
+      const content =
+        item.properties?.Content?.rich_text?.[0]?.plain_text ||
+        "This content is synced from Notion.";
+
+      return {
+        props: {
+          post: {
+            title,
+            description,
+            author:
+              item.properties?.Author?.people?.[0]?.name || "Cyberooms AI",
+            date: item.properties?.["Publish Date"]?.date?.start || "",
+            content: marked.parse(content),
+          },
+        },
+      };
+    }
+  }
+
+  return { props: { post: null } };
 }
