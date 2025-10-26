@@ -7,79 +7,75 @@ import { Client } from '@notionhq/client';
 const notion = new Client({ auth: process.env.NOTION_TOKEN });
 const dbId = process.env.NOTION_DB_ID;
 
-// Clean Notion ID (remove dashes)
+// Utility — remove dashes from Notion IDs
 const cleanId = (id) => id.replace(/-/g, '');
 
-// Recursively get Notion page content and render Markdown
-async function getPageContent(pageId) {
-  const blocks = [];
+// Recursively convert Notion blocks to Markdown
+async function getPageBlocks(pageId) {
+  let results = [];
   let cursor;
 
   do {
-    const response = await notion.blocks.children.list({
+    const { results: blocks, next_cursor } = await notion.blocks.children.list({
       block_id: pageId,
       start_cursor: cursor,
     });
 
-    for (const block of response.results) {
+    for (const block of blocks) {
       const { type } = block;
-      const text = block[type]?.rich_text
-        ?.map((t) => t.plain_text)
-        .join(' ')
-        .trim();
+      const text = block[type]?.rich_text?.map(t => t.plain_text).join(' ') || '';
 
       switch (type) {
         case 'heading_1':
-          blocks.push(`# ${text}\n`);
+          results.push(`# ${text}\n`);
           break;
         case 'heading_2':
-          blocks.push(`## ${text}\n`);
+          results.push(`## ${text}\n`);
           break;
         case 'heading_3':
-          blocks.push(`### ${text}\n`);
-          break;
-        case 'bulleted_list_item':
-          blocks.push(`- ${text}`);
-          break;
-        case 'numbered_list_item':
-          blocks.push(`1. ${text}`);
-          break;
-        case 'quote':
-          blocks.push(`> ${text}`);
-          break;
-        case 'callout':
-          blocks.push(`💡 ${text}`);
+          results.push(`### ${text}\n`);
           break;
         case 'paragraph':
-          if (text) blocks.push(text);
+          if (text.trim()) results.push(`${text}\n`);
+          break;
+        case 'bulleted_list_item':
+          results.push(`- ${text}`);
+          break;
+        case 'numbered_list_item':
+          results.push(`1. ${text}`);
+          break;
+        case 'quote':
+          results.push(`> ${text}`);
+          break;
+        case 'callout':
+          results.push(`💡 ${text}`);
           break;
         case 'image':
-          const imgUrl =
-            block.image?.file?.url || block.image?.external?.url || '';
-          if (imgUrl) blocks.push(`![Image](${imgUrl})`);
+          const url = block.image?.file?.url || block.image?.external?.url;
+          if (url) results.push(`![image](${url})`);
           break;
         default:
           break;
       }
 
-      // Handle nested blocks
+      // Fetch nested content if exists
       if (block.has_children) {
-        const nested = await getPageContent(block.id);
-        if (nested) blocks.push(nested);
+        const nested = await getPageBlocks(block.id);
+        if (nested) results.push(nested);
       }
     }
 
-    cursor = response.next_cursor;
+    cursor = next_cursor;
   } while (cursor);
 
-  return blocks.join('\n\n');
+  return results.join('\n\n');
 }
 
 async function main() {
   console.log('🚀 Connecting to Notion database...');
-  const response = await notion.databases.query({ database_id: dbId });
+  const dbQuery = await notion.databases.query({ database_id: dbId });
 
-  if (!response.results?.length) {
+  if (!dbQuery.results.length) {
     console.log('⚠️ No pages found.');
     return;
   }
@@ -87,7 +83,7 @@ async function main() {
   if (!fs.existsSync('content')) fs.mkdirSync('content');
   const jsonExport = [];
 
-  for (const page of response.results) {
+  for (const page of dbQuery.results) {
     const props = page.properties;
     const title = props['Article Title']?.title?.[0]?.plain_text || 'Untitled';
     const slug =
@@ -102,8 +98,8 @@ async function main() {
       continue;
     }
 
-    console.log(`📄 Fetching full content for "${title}"...`);
-    const body = await getPageContent(cleanId(page.id));
+    console.log(`📄 Extracting content for "${title}"...`);
+    const body = await getPageBlocks(cleanId(page.id));
 
     const markdown = `---\ntitle: "${title}"\nslug: "${slug}"\ndescription: "${description}"\n---\n\n${body}`;
     fs.writeFileSync(`content/${slug}.md`, markdown);
