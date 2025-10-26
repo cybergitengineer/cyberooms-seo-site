@@ -6,4 +6,3 @@ keywords: ""
 tags: ""
 ---
 
-This page verifies automatic sync.
