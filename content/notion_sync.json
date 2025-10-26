@@ -3,12 +3,14 @@
     "title": "Top 10 AI-Driven Security Tools in Texas in 2025",
     "slug": "ai-security-tools-2025",
     "description": "Discover the top 10 AI-driven cybersecurity tools in 2025 …",
-    "body": ""
+    "published": true,
+    "body": "2025-09-28\n · Edgar Pfuma\n\nArtificial Intelligence is reshaping cybersecurity. From automated \nthreat detection to Zero Trust enforcement, AI tools help organizations \nstay secure.Summary (TL;DR): This guide compares leading AI-driven security platforms across detection, response, and microsegmentation.\n\n1. TrueFort — Microsegmentation\n\n• What it does: Workload identity mapping + microsegmentation.\n💡 \nPro Tip: Use TrueFort alongside Azure Firewall to align microsegmentation with cloud-native controls.\n\n• Why it matters: Reduces lateral movement; supports Zero Trust.\n• Good for: Hybrid/cloud workloads.\n• Link: \nhttps://www.truefort.com\n\n2. CrowdStrike Falcon — Endpoint + Telemetry\n\n• What it does: AI-powered EDR/XDR with rich endpoint telemetry.\n🔒 *Best for large enterprises needing unified endpoint visibility across cloud and on-prem.*\n\n\n• Why it matters: Faster detection, response, and threat intel correlation.\n• Good for: Enterprise endpoint fleets; hybrid environments.\n• Link: \nhttps://www.crowdstrike.com\n\n3. Illumio — Adaptive Segmentation\n\n• What it does: Policy-driven segmentation with real-time visibility.\n• Why it matters: Limits blast radius; simplifies least-privilege.\n• Good for: Data center + cloud.\n• Link: \nhttps://www.illumio.com\n\n4. Microsoft Defender/Sentinel — Cloud-Native SIEM/SOAR\n\n• What it does: ML analytics across identities, endpoints, cloud.\n• Why it matters: Unified detection + automated playbooks.\n• Link: \nhttps://learn.microsoft.com/azure/sentinel/\n\n5. Darktrace — Self-Learning Anomaly Detection\n\n• What it does: Learns “normal” to detect threats and insiders.\n• Why it matters: Catch subtle anomalies early.\n• Link: \nhttps://darktrace.com\n\n6. Palo Alto Cortex XDR — Cross-Domain Analytics\n7. Wiz — Cloud Security Posture + Graph\n8. Lacework — Cloud Threat Detection\n9. Akamai Guardicore — Segmentation\n10. Fortinet (FortiEDR/FortiSIEM) — Integrated Stack\n\n\n(For 6–10, mirror the 4 bullets above: What it does / Why it matters / Good for / Link)\n\nBuying Checklist\n\n• Must-have: Zero Trust alignment, API access, meaningful detections (low false positives).\n• Nice-to-have: Native cloud integrations, MITRE ATT&CK mapping, usage-based pricing.\n\nConclusion\n\nAI-driven security tools are now table stakes. Start with clear \nobjectives (reduce dwell time, limit lateral movement) and select a \nplatform that integrates with your existing data and controls.\",\n    \"author\": \"Edgar Pfuma\",\n    \"datePublished\": \"2025-09-28\",\n    \"updatedAt\": \"2025-09-29\",\n    \"schemaType\": \"Article\",\n    \"keywords\": [\n      \"AI Security\",\n      \"Cybersecurity Tools\",\n      \"Zero Trust\"\n    ]\n  }\n]"
   },
   {
     "title": "Test Sync Page",
     "slug": "test-sync-page",
     "description": "",
-    "body": ""
+    "published": true,
+    "body": "This page verifies automatic sync."
   }
 ]
