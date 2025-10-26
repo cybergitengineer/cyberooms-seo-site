@@ -7,10 +7,10 @@ import { Client } from '@notionhq/client';
 const notion = new Client({ auth: process.env.NOTION_TOKEN });
 const dbId = process.env.NOTION_DB_ID;
 
-// Helper to clean Notion IDs
+// Clean Notion ID (remove dashes)
 const cleanId = (id) => id.replace(/-/g, '');
 
-// Recursively extract text from Notion blocks
+// Recursively get Notion page content and render Markdown
 async function getPageContent(pageId) {
   const blocks = [];
   let cursor;
@@ -23,17 +23,20 @@ async function getPageContent(pageId) {
 
     for (const block of response.results) {
       const { type } = block;
-      const text = block[type]?.rich_text?.map(t => t.plain_text).join(' ') || '';
+      const text = block[type]?.rich_text
+        ?.map((t) => t.plain_text)
+        .join(' ')
+        .trim();
 
       switch (type) {
         case 'heading_1':
-          blocks.push(`# ${text}`);
+          blocks.push(`# ${text}\n`);
           break;
         case 'heading_2':
-          blocks.push(`## ${text}`);
+          blocks.push(`## ${text}\n`);
           break;
         case 'heading_3':
-          blocks.push(`### ${text}`);
+          blocks.push(`### ${text}\n`);
           break;
         case 'bulleted_list_item':
           blocks.push(`- ${text}`);
@@ -44,14 +47,22 @@ async function getPageContent(pageId) {
         case 'quote':
           blocks.push(`> ${text}`);
           break;
+        case 'callout':
+          blocks.push(`💡 ${text}`);
+          break;
         case 'paragraph':
-          blocks.push(text);
+          if (text) blocks.push(text);
+          break;
+        case 'image':
+          const imgUrl =
+            block.image?.file?.url || block.image?.external?.url || '';
+          if (imgUrl) blocks.push(`![Image](${imgUrl})`);
           break;
         default:
           break;
       }
 
-      // Recursive fetch for nested content (like lists under toggles)
+      // Handle nested blocks
       if (block.has_children) {
         const nested = await getPageContent(block.id);
         if (nested) blocks.push(nested);
@@ -78,7 +89,7 @@ async function main() {
 
   for (const page of response.results) {
     const props = page.properties;
-    const title = props['Article Title']?.title?.[0]?.plain_text || 'untitled';
+    const title = props['Article Title']?.title?.[0]?.plain_text || 'Untitled';
     const slug =
       props['Slug/URL']?.rich_text?.[0]?.plain_text ||
       title.toLowerCase().replace(/\s+/g, '-');
