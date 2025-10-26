@@ -1,0 +1,23 @@
+name: Sync Notion to Website
+
+on:
+  schedule:
+    - cron: '0 */6 * * *' # every 6 hours
+  workflow_dispatch:     # allows manual run from Actions tab
+
+jobs:
+  update-site:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt || echo "No requirements.txt found"
+
+      - name: Pull Notion content
+        run: python scripts/sync_notion.py || echo "sync script not found"
