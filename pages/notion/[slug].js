@@ -1,7 +1,10 @@
+import "github-markdown-css/github-markdown-light.css";
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
 import Head from "next/head";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 // ──────────────────────────────────────────────
 // Main Page Component
@@ -16,12 +19,11 @@ export default function NotionPost({ post }) {
         <meta name="description" content={post.description || ""} />
       </Head>
 
-      <main className="container">
+      <main className="container markdown-body" style={{ padding: "2rem" }}>
         <h1>{post.title}</h1>
-        <article
-          dangerouslySetInnerHTML={{ __html: post.content }}
-          style={{ lineHeight: "1.6em", marginTop: "1.5em" }}
-        />
+        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+          {post.content}
+        </ReactMarkdown>
       </main>
     </>
   );
@@ -52,6 +54,19 @@ export async function getStaticProps({ params }) {
   const filePath = path.join(process.cwd(), "content", `${params.slug}.md`);
 
   try {
+    if (!fs.existsSync(filePath)) {
+      console.warn(`⚠️ Missing file for slug: ${params.slug}`);
+      return {
+        props: {
+          post: {
+            title: "Notion Sync Pending",
+            description: `The page **${params.slug}** hasn’t been synced from Notion yet.`,
+            content: "This content will appear automatically after the next Notion sync.",
+          },
+        },
+      };
+    }
+
     const fileContent = fs.readFileSync(filePath, "utf-8");
     const { content, data } = matter(fileContent);
 
@@ -61,12 +76,20 @@ export async function getStaticProps({ params }) {
           ...data,
           title: data.title || params.slug,
           description: data.description || "",
-          content: content.replace(/\n/g, "<br />"),
+          content,
         },
       },
     };
   } catch (error) {
-    console.error("Error loading markdown:", error);
-    return { props: { post: null } };
+    console.error("❌ Error loading markdown:", error);
+    return {
+      props: {
+        post: {
+          title: "Error Loading Page",
+          description: "There was an issue loading this content.",
+          content: "<p>Please check the logs or retry syncing from Notion.</p>",
+        },
+      },
+    };
   }
 }
