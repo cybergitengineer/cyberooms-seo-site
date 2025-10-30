@@ -17,7 +17,38 @@ export default function NotionPost({ post }) {
       <Head>
         <title>{post.title}</title>
         <meta name="description" content={post.description || ""} />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Article",
+              headline: post.title,
+              description: post.description || "",
+              author: {
+                "@type": "Person",
+                name: "Cyberooms AI Team",
+              },
+              publisher: {
+                "@type": "Organization",
+                name: "Cyberooms",
+                logo: {
+                  "@type": "ImageObject",
+                  url: "https://ai.cyberooms.com/logo.png",
+                },
+              },
+              datePublished: new Date().toISOString(),
+              mainEntityOfPage: {
+                "@type": "WebPage",
+                "@id": `https://ai.cyberooms.com/notion/${post.title
+                  .toLowerCase()
+                  .replace(/\s+/g, "-")}`,
+              },
+            }),
+          }}
+        />
       </Head>
+
 
       <main className="container markdown-body" style={{ padding: "2rem" }}>
         <h1>{post.title}</h1>
